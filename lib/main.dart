@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:state_lib/prop_builder.dart';
 import 'package:state_lib/prop_provider.dart';
 import 'package:state_lib/prop_state.dart';
+import 'package:state_lib/school.dart.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,10 +14,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PropState<int> counterState = PropState<int>(0);
+    final PropState<School> schoolState =
+        PropState<School>(School(name: '', location: '', totalStudents: 100));
     return PropProvider(
-      state: counterState,
-      child: const MaterialApp(
-        home: CounterScreen(),
+      state: schoolState,
+      child: PropProvider(
+        state: counterState,
+        child: const MaterialApp(
+          home: CounterScreen(),
+        ),
       ),
     );
   }
@@ -38,6 +44,9 @@ class _CounterScreenState extends State<CounterScreen> {
   @override
   Widget build(BuildContext context) {
     final stateProvider = PropProvider.of<int>(context);
+    final schoolProvider = PropProvider.of<School>(context);
+    final schoolState = schoolProvider!.state;
+
     final counterState = stateProvider!.state;
 
     return Scaffold(
@@ -45,6 +54,12 @@ class _CounterScreenState extends State<CounterScreen> {
       body: Center(
         child: Column(
           children: [
+            PropBuilder<School>(
+              builder: (context, value) => Text(
+                'total Students: ${value.totalStudents}',
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
             PropBuilder<int>(
               builder: (context, value) => Text(
                 'Counter: $value',
@@ -59,6 +74,16 @@ class _CounterScreenState extends State<CounterScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      schoolState.update((currentSchool) {
+                        return currentSchool.copyWith(
+                            totalStudents: currentSchool.totalStudents + 1);
+                      });
+                    },
+                    child: const Icon(Icons.add),
+                  ),
+                  const Spacer(),
                   ElevatedButton(
                     onPressed: () {
                       counterState.value++;

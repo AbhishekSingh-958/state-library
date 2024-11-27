@@ -29,6 +29,7 @@ class PropState<T>{
   void addListener(VoidCallback listener) {
     _listeners.add(listener);
   }
+  
 
   void removeListener(VoidCallback listener) {
     _listeners.remove(listener);
